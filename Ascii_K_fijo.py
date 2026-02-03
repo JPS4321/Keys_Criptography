@@ -1,16 +1,16 @@
-# Tabla ASCII (carácter → decimal)
-tabla_ascii = {
-    ' ':32,
-    **{chr(i): i for i in range(33, 127)}
-}
+from tables import tabla_ascii
 
-# Tabla ASCII inversa (decimal → carácter)
+# Tabla inversa
 tabla_ascii_inv = {}
 for c in tabla_ascii:
     tabla_ascii_inv[tabla_ascii[c]] = c
 
+# Alfabeto válido ordenado
+alfabeto = sorted(tabla_ascii.keys(), key=lambda x: tabla_ascii[x])
+N = len(alfabeto)
 
-def cifrar_ascii(mensaje, llave, tabla_ascii, tabla_ascii_inv):
+
+def cifrar_ascii(mensaje, llave):
     cipher = ""
     len_llave = len(llave)
 
@@ -18,13 +18,14 @@ def cifrar_ascii(mensaje, llave, tabla_ascii, tabla_ascii_inv):
         char_m = mensaje[i]
         char_k = llave[i % len_llave]
 
-        ascii_m = tabla_ascii[char_m]
-        ascii_k = tabla_ascii[char_k]
+        # índices dentro del alfabeto
+        idx_m = alfabeto.index(char_m)
+        idx_k = alfabeto.index(char_k)
 
-        # cifrado ASCII (rango imprimible)
-        ascii_c = ((ascii_m + ascii_k - 32) % 95) + 32
+        # cifrado modular
+        idx_c = (idx_m + idx_k) % N
 
-        cipher += tabla_ascii_inv[ascii_c]
+        cipher += alfabeto[idx_c]
 
     return cipher
 
@@ -33,7 +34,7 @@ def cifrar_ascii(mensaje, llave, tabla_ascii, tabla_ascii_inv):
 mensaje = "HOLA MUNDO"
 llave_k = "KEY"
 
-cipher = cifrar_ascii(mensaje, llave_k, tabla_ascii, tabla_ascii_inv)
+cipher = cifrar_ascii(mensaje, llave_k)
 
 print("Mensaje original:", mensaje)
 print("Llave fija k:    ", llave_k)
